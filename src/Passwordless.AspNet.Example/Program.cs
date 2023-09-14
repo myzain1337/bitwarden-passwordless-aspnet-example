@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Passwordless.DataContext;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +17,10 @@ builder.Services.AddRazorPages(options =>
 
 var app = builder.Build();
 
-app.MigrateDataContext();
+// Execute our migrations to generate our `example.db` file with all the required tables.
+using var scope = app.Services.CreateScope();
+var dbContext = scope.ServiceProvider.GetRequiredService<PasswordlessContext>();
+dbContext.Database.Migrate();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
